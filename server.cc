@@ -14,10 +14,7 @@ void ipc_shm() {
   int shmid = shmget(key, BUFFER_SIZE, IPC_CREAT | 0666);
   char *shmaddr = static_cast<char *>(shmat(shmid, NULL, 0));
   string s;
-  while (cin >> s) {
-    if (s == "q") {
-      break;
-    }
+  while (getline(cin, s)) {
     strcpy(shmaddr, s.c_str());
   }
 }
