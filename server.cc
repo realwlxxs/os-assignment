@@ -1,10 +1,13 @@
 #include <cassert>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define BUFFER_SIZE 1024
 
@@ -37,11 +40,23 @@ void ipc_mq() {
   }
 }
 
+void ipc_fifo() {
+  mkfifo("./fifo", 0666);
+  ofstream fifo;
+  fifo.open("./fifo", ios::out);
+  string s;
+  while (getline(cin, s)) {
+    fifo << s << endl;
+  }
+}
+
 int main(int argc, char *argv[]) {
   assert(argc == 2);
   if (!strcmp(argv[1], "shm")) {
     ipc_shm();
   } else if (!strcmp(argv[1], "mq")) {
     ipc_mq();
+  } else if (!strcmp(argv[1], "fifo")) {
+    ipc_fifo();
   }
 }

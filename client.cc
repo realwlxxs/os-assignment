@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -31,11 +32,23 @@ void ipc_mq() {
   printf("%s\n", m.text);
 }
 
+void ipc_fifo() {
+  ifstream fifo;
+  fifo.open("./fifo", ios::in);
+  string s;
+  while (fifo.good()) {
+    getline(fifo, s);
+    cout << s << endl;
+  }
+}
+
 int main(int argc, char *argv[]) {
   assert(argc == 2);
   if (!strcmp(argv[1], "shm")) {
     ipc_shm();
   } else if (!strcmp(argv[1], "mq")) {
     ipc_mq();
+  } else if (!strcmp(argv[1], "fifo")) {
+    ipc_fifo();
   }
 }
