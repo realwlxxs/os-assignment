@@ -6,8 +6,10 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #define BUFFER_SIZE 1024
 
@@ -50,6 +52,22 @@ void ipc_fifo() {
   }
 }
 
+void ipc_socket() {
+  int sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+  sockaddr server_addr;
+  server_addr.sa_family = AF_UNIX;
+  strcpy(server_addr.sa_data, "\0./socket");
+  bind(sockfd, &server_addr, sizeof(server_addr));
+  listen(sockfd, 1);
+  int connect_fd = accept(sockfd, NULL, NULL);
+  string s;
+  while (getline(cin, s)) {
+    write(connect_fd, s.c_str(), s.size());
+  }
+  close(sockfd);
+  close(connect_fd);
+}
+
 int main(int argc, char *argv[]) {
   assert(argc == 2);
   if (!strcmp(argv[1], "shm")) {
@@ -58,5 +76,7 @@ int main(int argc, char *argv[]) {
     ipc_mq();
   } else if (!strcmp(argv[1], "fifo")) {
     ipc_fifo();
+  } else if (!strcmp(argv[1], "socket")) {
+    ipc_socket();
   }
 }
